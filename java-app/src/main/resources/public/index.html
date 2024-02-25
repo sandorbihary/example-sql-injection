@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Example of SQL Injection</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+</head>
+
+<body>
+<div id="app" class="container">
+    <h1>English to Portuguese Dictionary</h1>
+    <hr>
+
+    <h2>Add word</h2>
+    <form @submit.prevent="postWords" action="#" class="form-inline">
+        <div class="form-group">
+            <label for="wordEn" class="control-label" style="margin-right: 2px">English:</label>
+            <input type="text" id="wordEn" name="wordEn" class="form-control" style="margin-right: 2em; width: 20em">
+        </div>
+        <div class="form-group">
+            <label for="wordPt" class="control-label" style="margin-right: 2px">Portuguese:</label>
+            <input type="text" id="wordPt" name="wordPt" class="form-control" style="margin-right: 2em; width: 20em">
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <hr>
+
+    <h2>Search words</h2>
+    <form @submit.prevent="getWords" action="#" class="form-inline">
+        <div class="form-group">
+            <label for="searchExpr" class="control-label" style="margin-right: 2px">Containing:</label>
+            <input type="text" id="searchExpr" name="searchExpr" class="form-control" style="margin-right: 2em; width: 20em">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <hr>
+
+    <h2>Word list</h2>
+    <p>
+        Result of search for <span id="searchWord">...</span>
+    </p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>English</th>
+                <th>Portuguese</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="word in words">
+                <td>{{word.en}}</td>
+                <td v-html="word.pt"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script type="module">
+    import {createApp} from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+    createApp({
+        data() {
+            return {
+                words: [],
+                search: ''
+            }
+        },
+        methods: {
+            async getWords(evt) {
+                let url = new URL('/words', location.origin);
+                let searchExpr = (location.search) ? location.search.split('=')[1]
+                               : (evt)             ? evt.target['searchExpr'].value
+                               : '';
+                if (searchExpr) {
+                    document.getElementById('searchWord').innerHTML = searchExpr;
+                    this.search = searchExpr;
+                    url.searchParams.set('search', this.search);
+                }
+                let formField = document.getElementById('searchExpr');
+                if (!formField.value) {
+                    formField.value = searchExpr;
+                }
+                let response = await fetch(url);
+                this.words = await response.json();
+            },
+            async postWords(evt) {
+                await fetch('/words', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        en: evt.target['wordEn'].value,
+                        pt: evt.target['wordPt'].value
+                    })
+                });
+                evt.target.reset();
+                evt.target.elements[0].focus();
+                this.getWords();
+            }
+        },
+        mounted() {
+            this.getWords();
+        }
+    }).mount('#app');
+</script>
+</body>
+
+</html>
