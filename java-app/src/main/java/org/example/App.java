@@ -15,6 +15,7 @@ public class App {
     static Jdbi jdbi;
 
     public static void main(String[] args) throws IOException {
+        
         // web server
         var app = Javalin.create(config -> {
             config.staticFiles.add("/public");

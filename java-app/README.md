@@ -2,6 +2,11 @@
 
 1. You need Java 21 and Maven 3.8.
 
-2. Launch in the IDE, using the class `org.example.App`.
+2. Execute the following commands:
+
+```
+mvn package
+mvn exec:java
+```
 
 3. Open http://localhost:8080 in the browser.
